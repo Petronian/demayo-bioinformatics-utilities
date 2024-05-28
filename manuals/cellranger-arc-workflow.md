@@ -5,7 +5,7 @@ Last updated by Peter Lais on 05/28/2024.
 > [!NOTE]
 > For DeMayo lab members, you will need to use `scigate` for this.
 
-* _Reference: https://www.10xgenomics.com/support/software/cell-ranger/latest/tutorials/cr-tutorial-ct_
+* **Reference:** https://www.10xgenomics.com/support/software/cell-ranger-arc/latest/analysis/running-pipelines/single-library-analysis
 * Note that this procedure is specific to the DeMayo lab and might need to be altered for others.
 * For the sake of example, let's use the following names:
     * Sequencing run name: `SequencingRun`
