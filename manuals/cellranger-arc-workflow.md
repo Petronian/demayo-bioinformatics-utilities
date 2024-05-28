@@ -14,7 +14,7 @@ Last updated by Peter Lais on 05/28/2024.
 
 ## Installing Cell Ranger ARC and reference files
 
-Run the `installCellRangerArc.sh` file from the `tools` folder of this repository to have Cell Ranger installed locally on your home directory (`~`). This will create two folders:
+Run the `installCellRangerArc.sh` file (once downloaded, execute the command: `bash installCellRangerArc.sh`) from the `tools` folder of this repository to have Cell Ranger installed locally on your home directory (`~`). This will create two folders:
 
 1. `cellranger-arc-2.0.2`, which will contain the main Cell Ranger ARC application, version 2.0.2.
 2. `refdata-cellranger-arc-GRCh38-2020-A-2.0.0`, which contains the reference genomes needed by Cell Ranger ARC for humans (GRCh38).

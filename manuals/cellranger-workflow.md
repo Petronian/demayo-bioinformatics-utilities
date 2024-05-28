@@ -14,7 +14,7 @@ Last updated by Peter Lais on 05/28/2024.
 
 ## Installing Cell Ranger and reference files
 
-Run the `installCellRanger.sh` file from the `tools` folder of this repository to have Cell Ranger installed locally on your home directory (`~`). This will create two folders:
+Run the `installCellRanger.sh` file (once downloaded, execute the command: `bash installCellRanger.sh`) from the `tools` folder of this repository to have Cell Ranger installed locally on your home directory (`~`). This will create two folders:
 
 1. `cellranger-8.0.1`, which will contain the main Cell Ranger application, version 8.0.1.
 2. `refdata-gex-GRCh38_and_GRCm39-2024-A`, which contains the reference genomes needed for Cell Ranger for mice (GRCm39) and humans (GRCh38).
