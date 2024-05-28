@@ -1,4 +1,6 @@
-# CellRanger step-by-step workflow
+# Cell Ranger ARC 2.0.2 step-by-step workflow
+
+Last updated by Peter Lais on 05/28/2024.
 
 > [!NOTE]
 > For DeMayo lab members, you will need to use `scigate` for this.
