@@ -74,7 +74,7 @@ analysis. There will be two processing steps in total:
 2. Using the signature matrix, impute cell type fractions on the bulk
    sample matrix.
 
-### Process data offline using Docker/Singularity
+### Process data offline using Docker/Apptainer
 
 The main CIBERSORTx website sometimes doesn't cooperate properly with users.
 If problems arise here—for example, your files are too big, the server isn't
