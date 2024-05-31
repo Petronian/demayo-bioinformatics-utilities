@@ -180,3 +180,55 @@ ipa_dotplot <- function(tbl,
               ggplot2::theme(axis.text.y = element_text(angle = 0, vjust = 1)))
     }
 }
+
+#' Plot a nice-looking volcano plot with minimal effort. Thanks, Elvis.
+#' 
+#' @param df The data frame to input. This would ideally be the output of a program like
+#'           DESeq2, containing logarithmic fold changes and adjusted p-values.
+#' @param logfc_column The column name containing the logarithmic fold-changes.
+#' @param logfc_cutoff The logarithmic fold-change cutoff that determines "high" or "low" values.
+#'                     This will be used on both positive and negative ends, so this cutoff should be positive.
+#' @param padj_column The column name containing adjusted p-values.
+#' @param padj_cutoff The default p-value cutoff. Default is 0.05.
+#' @param point_shape The shape of the points to plot. Default is 21, corrsponding to circles.
+#'                    See ggplot2 for more information.
+#' @param hline_linetype The type of boundary to plot between significant and nonsignificant points.
+#'                       Default is a dashed line.
+#' @param vlines_linetype The type of boundary to plot between high/low points and points with lower
+#'                        logarithmic fold changes. Default is a dashed line.
+#' 
+#' @return A ggplot2-compatible volcano plot.
+#' 
+#' @export
+volcano_plot <- function(df,
+                         logfc_column,
+                         logfc_cutoff,
+                         padj_column,
+                         padj_cutoff = 0.05,
+                         point_shape = 21,
+                         hline_linetype = "dashed",
+                         vlines_linetype = "dashed") {
+  `%>%` <- magrittr::`%>%`
+  if (logfc_cutoff < 0) {
+    warning("logfc_cutoff is less than 0, making positive.")
+  }
+  logfc_cutoff <- abs(logfc_cutoff)
+  df <- df %>% dplyr::mutate(gene_type = case_when(!!sym(logfc_column) >= logfc_cutoff & !!sym(padj_column) < padj_cutoff ~ "up",
+                                                  !!sym(logfc_column) <= -logfc_cutoff & !!sym(padj_column) < padj_cutoff ~ "down",
+                                                  !!sym(logfc_column) > 0 & !!sym(logfc_column) < logfc_cutoff & !!sym(padj_column) < padj_cutoff ~ "warm",
+                                                  !!sym(logfc_column) < 0 & !!sym(logfc_column) > -logfc_cutoff & !!sym(padj_column) < padj_cutoff ~ "cold",
+                                                  TRUE ~ "ns"))
+  plt <- df %>% ggplot2::ggplot(ggplot2::aes(x = !!sym(logfc_column),
+                                             y = -log10(!!sym(padj_column)),
+                                             fill = gene_type,
+                                             size = gene_type,
+                                             alpha = gene_type)) + 
+                ggplot2::geom_point(shape = point_shape, color = "black") + 
+                ggplot2::geom_hline(yintercept = -log10(padj_cutoff), linetype = hline_linetype) + 
+                ggplot2::geom_vline(xintercept = c(-logfc_cutoff, logfc_cutoff), linetype = vlines_linetype) + 
+                ggplot2::scale_fill_manual(values = c("up" = "red", "down" = "blue", "ns" = "gray", "warm" = "pink", "cold" = "skyblue")) + 
+                ggplot2::scale_size_manual(values = c("up" = 2, "down" = 2, "ns" = 1, "warm" = 1, "cold" = 1)) + 
+                ggplot2::scale_alpha_manual(values = c("up" = 1, "down" = 1, "ns" = 0.5, "warm" = 0.5, "cold" = 0.5))
+
+  return(plt)
+}

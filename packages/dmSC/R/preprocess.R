@@ -376,3 +376,43 @@ seurat_to_sc_ref <- function(st_obj, cluster_colname = NULL, ...) {
     }
     return(assay_data)
 }
+
+#' Impute cell types for Seurat object tgt_st with Seurat object ref_st.
+#' 
+#' @param tgt_st Target Seurat object to impute cell types against.
+#' @param ref_st Reference Seurat object against which to impute cell types.
+#' @param out_nm Column to create imputed clusters under in tgt_st.
+#' @param tgt_clusters_nm Column in tgt_st containing clusters. If NULL, Seurat::Idents(tgt_st) is used.
+#' @param ref_clusters_nm Column in ref_st containing clusters. If NULL, Seurat::Idents(ref_st) is used.
+#' 
+#' @returns Target Seurat object with extra column containing imputed clusters.
+#' @export
+impute_st <- function(tgt_st, ref_st, out_nm = "singler_clusters", tgt_clusters_nm = NULL, ref_clusters_nm = NULL) {
+    tgt_st_copy <- tgt_st
+    
+    # Convert to single-cell experiments.
+    tgt_sce <- Seurat::as.SingleCellExperiment(tgt_st)
+    ref_sce <- Seurat::as.SingleCellExperiment(ref_st)
+    
+    # Get the labels (reference categories) and clusters (target categories).
+    labels <- if(is.null(ref_clusters_nm))  { Seurat::Idents(ref_st) } else { as.vector(unlist(ref_st[[ref_clusters_nm]])) }
+    clusters <- if(is.null(tgt_clusters_nm)) { Seurat::Idents(tgt_st) } else { as.vector(unlist(tgt_st[[tgt_clusters_nm]])) }
+
+    # Impute based on cell type, fine-grained.
+    pred_singler <- SingleR::SingleR(test = tgt_sce,
+                                     ref = ref_sce,
+                                     assay.type.test = "logcounts",
+                                     assay.type.ref = "logcounts",
+                                     labels = labels,
+                                     clusters = clusters,
+                                     de.method = "wilcox")
+    
+    # Map the old to the new clusters.
+
+    mapper <- pred_singler$pruned.labels
+    names(mapper) <- rownames(pred_singler)
+    mapped_clusters <- as.vector(unlist(purrr::map(clusters, function (x) { mapper[x] })))
+    tgt_st_copy[[out_nm]] <- mapped_clusters
+    
+    return(tgt_st_copy)
+}
